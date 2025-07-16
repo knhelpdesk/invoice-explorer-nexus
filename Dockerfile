@@ -9,7 +9,7 @@ COPY backend/package*.json ./
 COPY backend/tsconfig.json ./
 
 # Install backend dependencies
-RUN npm install --only=production && npm cache clean --force
+RUN npm install && npm cache clean --force
 
 # Copy backend source code
 COPY backend/src ./src
