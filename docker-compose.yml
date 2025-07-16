@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  office365-invoice-search:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: office365-invoice-search
+    restart: unless-stopped
+    ports:
+      - "80:3000"    # Frontend
+      - "3001:3001"  # Backend API
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - FRONTEND_URL=http://localhost:3000
+      - LOG_LEVEL=info
+      # Add your Microsoft 365 tenant configurations here
+      # - TENANT_ID=your-tenant-id
+      # - CLIENT_ID=your-client-id
+      # - CLIENT_SECRET=your-client-secret
+      # - TENANT_NAME=Your Organization
+      # Multi-tenant example:
+      # - TENANT_1_ID=tenant-1-id
+      # - TENANT_1_CLIENT_ID=tenant-1-client-id
+      # - TENANT_1_CLIENT_SECRET=tenant-1-client-secret
+      # - TENANT_1_NAME=Tenant 1
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+    networks:
+      - office365-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  office365-network:
+    driver: bridge
+
+volumes:
+  logs:
+    driver: local
