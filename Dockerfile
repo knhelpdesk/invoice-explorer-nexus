@@ -8,14 +8,17 @@ WORKDIR /app/backend
 COPY backend/package*.json ./
 COPY backend/tsconfig.json ./
 
-# Install backend dependencies
-RUN npm install && npm cache clean --force
+# Install backend dependencies (including dev dependencies for build)
+RUN npm install
 
 # Copy backend source code
 COPY backend/src ./src
 
 # Build backend
 RUN npm run build
+
+# Clean install production dependencies only
+RUN rm -rf node_modules && npm install --omit=dev
 
 # Frontend build stage
 FROM node:18-alpine AS frontend-builder
