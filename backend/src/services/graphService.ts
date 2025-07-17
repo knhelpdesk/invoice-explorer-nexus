@@ -1,5 +1,4 @@
 import { Client } from '@microsoft/microsoft-graph-client';
-import { AuthenticationProvider } from '@azure/msal-node';
 import { logger } from '../utils/logger';
 import { TenantConfig } from '../types/tenant';
 import { Invoice, SearchFilters } from '../types/invoice';
@@ -69,7 +68,7 @@ export class GraphService {
             throw new Error(`Token request failed: ${response.status}`);
           }
 
-          const tokenData = await response.json();
+          const tokenData = await response.json() as { access_token: string };
           return tokenData.access_token;
         } catch (error) {
           logger.error('Failed to get access token', { tenant: tenantConfig.name, error });
@@ -321,8 +320,8 @@ export class GraphService {
       result.status === 'fulfilled' 
         ? result.value 
         : {
-            name: this.tenantConfigs[index].name,
-            tenantId: this.tenantConfigs[index].tenantId,
+            name: this.tenantConfigs[index]?.name || 'Unknown',
+            tenantId: this.tenantConfigs[index]?.tenantId || 'Unknown',
             status: 'error',
             lastChecked: new Date().toISOString()
           }

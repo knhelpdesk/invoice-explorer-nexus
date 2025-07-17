@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { body, query, validationResult } from 'express-validator';
 import { GraphService } from '../services/graphService';
 import { logger } from '../utils/logger';
@@ -15,7 +15,7 @@ const validateSearchParams = [
 ];
 
 // Search invoices across all tenants
-router.get('/search', validateSearchParams, async (req, res, next) => {
+router.get('/search', validateSearchParams, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -53,7 +53,7 @@ router.get('/search', validateSearchParams, async (req, res, next) => {
 });
 
 // Download specific invoice
-router.get('/download/:invoiceId', async (req, res, next) => {
+router.get('/download/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { invoiceId } = req.params;
 
@@ -78,7 +78,7 @@ router.get('/download/:invoiceId', async (req, res, next) => {
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="invoice-${invoiceId}.pdf"`);
-    res.send(downloadData);
+    return res.send(downloadData);
 
   } catch (error) {
     logger.error('Invoice download failed', { invoiceId: req.params.invoiceId, error });
@@ -87,7 +87,7 @@ router.get('/download/:invoiceId', async (req, res, next) => {
 });
 
 // Get tenant status
-router.get('/tenants/status', async (req, res, next) => {
+router.get('/tenants/status', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const graphService = new GraphService();
     const tenantStatus = await graphService.getTenantStatus();
