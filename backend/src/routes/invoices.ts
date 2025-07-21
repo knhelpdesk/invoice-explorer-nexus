@@ -19,10 +19,11 @@ router.get('/search', validateSearchParams, async (req: Request, res: Response, 
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
+      res.status(400).json({
         error: 'Validation Error',
         details: errors.array()
       });
+      return;
     }
 
     const { invoiceNumber, amount, dateFrom, dateTo } = req.query;
@@ -58,10 +59,11 @@ router.get('/download/:invoiceId', async (req: Request, res: Response, next: Nex
     const { invoiceId } = req.params;
 
     if (!invoiceId) {
-      return res.status(400).json({
+      res.status(400).json({
         error: 'Bad Request',
         message: 'Invoice ID is required'
       });
+      return;
     }
 
     logger.info('Invoice download request', { invoiceId, ip: req.ip });
@@ -70,15 +72,16 @@ router.get('/download/:invoiceId', async (req: Request, res: Response, next: Nex
     const downloadData = await graphService.downloadInvoice(invoiceId);
 
     if (!downloadData) {
-      return res.status(404).json({
+      res.status(404).json({
         error: 'Not Found',
         message: 'Invoice not found or download not available'
       });
+      return;
     }
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="invoice-${invoiceId}.pdf"`);
-    return res.send(downloadData);
+    res.send(downloadData);
 
   } catch (error) {
     logger.error('Invoice download failed', { invoiceId: req.params.invoiceId, error });
