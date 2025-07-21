@@ -63,11 +63,14 @@ COPY --from=backend-builder /app/backend/package.json ./backend/
 # Copy frontend build
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-# Create logs directory
-RUN mkdir -p logs && chown office365:nodejs logs
-
 # Install serve to host frontend
 RUN npm install -g serve
+
+# Create logs directory and set proper ownership
+RUN mkdir -p logs && \
+    chown -R office365:nodejs /app && \
+    chmod 755 /app && \
+    chmod 755 logs
 
 # Switch to non-root user
 USER office365
