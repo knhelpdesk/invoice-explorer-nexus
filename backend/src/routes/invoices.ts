@@ -15,7 +15,7 @@ const validateSearchParams = [
 ];
 
 // Search invoices across all tenants
-router.get('/search', validateSearchParams, async (req: Request, res: Response, next: NextFunction) => {
+router.get('/search', validateSearchParams, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -36,8 +36,8 @@ router.get('/search', validateSearchParams, async (req: Request, res: Response, 
     const results = await graphService.searchInvoicesAcrossAllTenants({
       invoiceNumber: invoiceNumber as string,
       amount: amount ? parseFloat(amount as string) : undefined,
-      dateFrom: dateFrom as Date,
-      dateTo: dateTo as Date
+      dateFrom: dateFrom as Date | undefined,
+      dateTo: dateTo as Date | undefined
     });
 
     logger.info('Search completed', {
@@ -53,7 +53,7 @@ router.get('/search', validateSearchParams, async (req: Request, res: Response, 
 });
 
 // Download specific invoice
-router.get('/download/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/download/:invoiceId', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { invoiceId } = req.params;
 
@@ -87,7 +87,7 @@ router.get('/download/:invoiceId', async (req: Request, res: Response, next: Nex
 });
 
 // Get tenant status
-router.get('/tenants/status', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/tenants/status', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const graphService = new GraphService();
     const tenantStatus = await graphService.getTenantStatus();
