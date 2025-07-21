@@ -32,7 +32,7 @@ COPY vite.config.ts ./
 COPY tailwind.config.ts ./
 
 # Install frontend dependencies
-RUN npm ci
+RUN npm install
 
 # Copy frontend source code
 COPY src ./src
